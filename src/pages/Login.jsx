@@ -1,8 +1,10 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 
 function Login() {
   const navigate = useNavigate()
+  const { login } = useAuth()
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -19,7 +21,7 @@ function Login() {
   const handleSubmit = (e) => {
     e.preventDefault()
     // Здесь будет реальная проверка учетных данных
-    // Сейчас просто перенаправляем на главную страницу
+    login() // Устанавливаем состояние авторизации
     navigate('/dashboard')
   }
 

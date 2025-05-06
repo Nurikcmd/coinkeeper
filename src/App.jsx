@@ -5,42 +5,46 @@ import Dashboard from './pages/Dashboard'
 import Stats from './pages/Stats'
 import Settings from './pages/Settings'
 import Navbar from './components/Navbar'
+import ProtectedRoute from './components/ProtectedRoute'
+import { AuthProvider } from './context/AuthContext'
 
 function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route
-          path="/dashboard"
-          element={
-            <>
-              <Navbar />
-              <Dashboard />
-            </>
-          }
-        />
-        <Route
-          path="/stats"
-          element={
-            <>
-              <Navbar />
-              <Stats />
-            </>
-          }
-        />
-        <Route
-          path="/settings"
-          element={
-            <>
-              <Navbar />
-              <Settings />
-            </>
-          }
-        />
-        <Route path="/" element={<Navigate to="/login" replace />} />
-      </Routes>
+      <AuthProvider>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Navbar />
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/stats"
+            element={
+              <ProtectedRoute>
+                <Navbar />
+                <Stats />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/settings"
+            element={
+              <ProtectedRoute>
+                <Navbar />
+                <Settings />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/" element={<Navigate to="/login" replace />} />
+        </Routes>
+      </AuthProvider>
     </BrowserRouter>
   )
 }

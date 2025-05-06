@@ -1,7 +1,9 @@
 import { Link, useLocation } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 
 function Navbar() {
   const location = useLocation()
+  const { logout } = useAuth()
 
   const isActive = (path) => {
     return location.pathname === path
@@ -53,6 +55,7 @@ function Navbar() {
           <div className="hidden sm:ml-6 sm:flex sm:items-center">
             <button
               type="button"
+              onClick={logout}
               className="bg-white p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             >
               <span className="sr-only">Выйти</span>
