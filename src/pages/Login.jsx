@@ -9,6 +9,7 @@ function Login() {
     email: '',
     password: ''
   })
+  const [error, setError] = useState(null)
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -18,11 +19,15 @@ function Login() {
     }))
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    // Здесь будет реальная проверка учетных данных
-    login() // Устанавливаем состояние авторизации
-    navigate('/dashboard')
+    setError(null)
+    try {
+      await login(formData)
+    } catch (error) {
+      setError('Неверный email или пароль')
+      console.error('Ошибка входа:', error)
+    }
   }
 
   return (
@@ -35,6 +40,11 @@ function Login() {
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+          {error && (
+            <div className="mb-4 p-2 text-sm text-red-600 bg-red-50 rounded">
+              {error}
+            </div>
+          )}
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">

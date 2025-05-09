@@ -1,13 +1,17 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 
 function Register() {
   const navigate = useNavigate()
+  const { register } = useAuth()
   const [formData, setFormData] = useState({
     email: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    name: ''
   })
+  const [error, setError] = useState(null)
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -17,15 +21,25 @@ function Register() {
     }))
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
+    setError(null)
+
     if (formData.password !== formData.confirmPassword) {
-      alert('Пароли не совпадают')
+      setError('Пароли не совпадают')
       return
     }
-    // Здесь будет реальная регистрация
-    // Сейчас просто перенаправляем на главную страницу
-    navigate('/dashboard')
+
+    try {
+      await register({
+        email: formData.email,
+        password: formData.password,
+        name: formData.name
+      })
+    } catch (error) {
+      setError('Ошибка при регистрации')
+      console.error('Ошибка регистрации:', error)
+    }
   }
 
   return (
@@ -38,7 +52,30 @@ function Register() {
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+          {error && (
+            <div className="mb-4 p-2 text-sm text-red-600 bg-red-50 rounded">
+              {error}
+            </div>
+          )}
           <form className="space-y-6" onSubmit={handleSubmit}>
+            <div>
+              <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+                Имя
+              </label>
+              <div className="mt-1">
+                <input
+                  id="name"
+                  name="name"
+                  type="text"
+                  autoComplete="name"
+                  required
+                  value={formData.name}
+                  onChange={handleChange}
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                />
+              </div>
+            </div>
+
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                 Email
