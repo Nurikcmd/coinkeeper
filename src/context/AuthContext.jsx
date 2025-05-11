@@ -21,6 +21,22 @@ export function AuthProvider({ children }) {
     setLoading(false)
   }, [])
 
+  const handleAuthError = (error) => {
+    if (error.response?.status === 401 || error.response?.status === 403) {
+      // Очищаем данные из localStorage
+      localStorage.removeItem('user')
+      localStorage.removeItem('token')
+      
+      // Обновляем состояние
+      setUser(null)
+      setIsAuthenticated(false)
+      
+      // Перенаправляем на страницу входа
+      navigate('/login')
+    }
+    throw error
+  }
+
   const login = async (credentials) => {
     try {
       const response = await authAPI.login(credentials)
@@ -87,7 +103,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, user, login, register, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, user, login, register, logout, handleAuthError }}>
       {children}
     </AuthContext.Provider>
   )

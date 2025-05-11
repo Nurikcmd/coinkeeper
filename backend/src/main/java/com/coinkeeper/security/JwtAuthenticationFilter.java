@@ -35,6 +35,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             if (authHeader == null || !authHeader.startsWith("Bearer ")) {
                 log.debug("No valid Authorization header found");
+                SecurityContextHolder.clearContext();
                 filterChain.doFilter(request, response);
                 return;
             }
@@ -45,7 +46,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             final String userEmail = jwtService.extractUsername(jwt);
             log.debug("Extracted user email: {}", userEmail);
 
-            if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            if (userEmail != null) {
                 UserDetails userDetails = this.userService.loadUserByUsername(userEmail);
                 log.debug("Loaded user details: {}", userDetails.getUsername());
                 
@@ -59,13 +60,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 } else {
-                    log.debug("Token is invalid");
+                    log.debug("Token is invalid, clearing security context");
+                    SecurityContextHolder.clearContext();
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                     return;
                 }
+            } else {
+                log.debug("No user email found in token, clearing security context");
+                SecurityContextHolder.clearContext();
             }
         } catch (Exception e) {
             log.error("Error processing JWT token", e);
+            SecurityContextHolder.clearContext();
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }

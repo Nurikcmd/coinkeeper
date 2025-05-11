@@ -57,14 +57,14 @@ export function TransactionProvider({ children }) {
     if (!checkAuth()) return
     
     try {
-      console.log('Отправка транзакции:', transaction)
+      console.log('Добавление транзакции:', transaction)
       const response = await transactionsAPI.create(transaction)
-      console.log('Транзакция добавлена:', response.data)
-      setTransactions(prev => [...prev, response.data])
+      console.log('Ответ сервера:', response)
+      setTransactions(prev => [response.data, ...prev])
       setError(null)
     } catch (error) {
-      console.error('Ошибка при добавлении транзакции:', error.response?.data || error.message)
-      setError(error.response?.data?.message || 'Не удалось добавить транзакцию')
+      console.error('Ошибка при добавлении транзакции:', error)
+      setError('Не удалось добавить транзакцию')
       if (error.response?.status === 401 || error.response?.status === 403) {
         logout()
         navigate('/login')
